@@ -1,0 +1,41 @@
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.log
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.swp
+.DS_Store
+media/
+staticfiles/
+node_modules/
+/.vscode/
+migrations/
+sent_emails/
+venv/
+env/
+*.env
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Virtualenv
+venv/
+ENV/
+env/
+
+# VS Code
+.vscode/
