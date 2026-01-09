@@ -1,161 +1,27 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenido</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { 
-            background: linear-gradient(to bottom, #000000, #006633); 
-            min-height:100vh; 
-            display:flex; 
-            align-items:center; 
-            justify-content:center;
-            font-family: 'Roboto', sans-serif;
-            transition: background 0.3s ease;
-            padding: 120px;
-        }
-        .welcome-container {
-            width: 100%;
-            max-width: 1800px;
-        }
-        .welcome-header {
-            text-align: center;
-            color: #ffce00;
-            margin-bottom: 90px;
-        }
-        .welcome-header h1 {
-            font-size: 3.5rem;
-            font-weight: bold;
-        }
-        .welcome-header p {
-            font-size: 1.2rem;
-            color: #ffffff;
-            font-weight: bold;
-        }
-        .modules-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
-            gap: 70px;
-            margin-bottom: 70px;
-        }
-        .module-card { 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-            background: #000000;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid #ffce00;
-        }
-        .module-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 35px rgba(0,0,0,0.8);
-        }
-        .module-card h3 {
-            color: #ffce00;
-            margin-bottom: 15px;
-            font-weight: bold;
-            font-size: 1.8rem;
-        }
-        .module-icon {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            color: #ffce00;
-        }
-        .module-card p {
-            font-size: 1.2rem;
-            color: gray;
-            font-weight: bold;
-        }
-        .logout-btn {
-            text-align: center;
-            margin-top: 110px;
-        }
-        .btn-outline-primary {
-            color: #ffce00;
-            border-color: #ffce00;
-            transition: all 0.3s ease;
-            padding: 15px 40px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            border-radius: 20px;
-            border-width: 2px;
-        }
-        .btn-outline-primary:hover {
-            background: #ffce00;
-            color: #333;
-        }
-    </style>
-</head>
-<body>
-    
-    <div class="welcome-container">
-        <div class="welcome-header">
-            <h1>Bienvenido, {{ request.user.username }}</h1>
-            <p>Sistema de Gestión de Logística y Transporte</p>
-        </div>
+{% extends "base/base_base.html" %}
+{% load static %}
 
-        <div class="modules-grid">
-            <div class="module-card">
-                <div class="module-icon">🚚</div>
-                <h3>Gestión de Flota</h3>
-                <p>Administra vehículos, mantenimiento y disponibilidad</p>
-            </div>
+{% block title %}Bienvenido{% endblock %}
 
-            <div class="module-card">
-                <div class="module-icon">📍</div>
-                <h3>Seguimiento de Envíos</h3>
-                <p>Rastreo en tiempo real de tus envíos</p>
-            </div>
+{% block content %}
+    <div class="text-center mt-5">
+        
+        <h1>Bienvenido {{ user.username }}</h1>
+        <p>Información general del sistema</p>
 
-            <div class="module-card">
-                <div class="module-icon">🛣️</div>
-                <h3>Gestión de Rutas</h3>
-                <p>Planifica y optimiza rutas de entrega</p>
-            </div>
-
-            <div class="module-card">
-                <div class="module-icon">📦</div>
-                <h3>Inventario</h3>
-                <p>Control de almacenes y stock</p>
-            </div>
-
-            <div class="module-card">
-                <div class="module-icon">📋</div>
-                <h3>Órdenes de Transporte</h3>
-                <p>Crea y gestiona órdenes de envío</p>
-            </div>
-
-            <div class="module-card">
-                <div class="module-icon">👤</div>
-                <h3>Conductores</h3>
-                <p>Administra datos y asignaciones de conductores</p>
-            </div>
-
-            <div class="module-card">
-                <div class="module-icon">💰</div>
-                <h3>Facturación</h3>
-                <p>Genera facturas y reportes de ingresos</p>
-            </div>
-
-            <div class="module-card">
-                <div class="module-icon">📊</div>
-                <h3>Reportes</h3>
-                <p>Análisis y estadísticas del negocio</p>
-            </div>
-        </div>
-
-        <div class="logout-btn">
-            <a href="{% url 'logout' %}" class="btn btn-outline-primary">Cerrar sesión</a>
-        </div>
+        <img src="{% static 'accounts/arle.svg' %}" 
+             alt="Logo de la empresa" 
+             class="login-logo">
+             
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <style>
+        .login-logo {
+            max-width: 700px; /* Puedes cambiar este número para hacerlo más grande o chico */
+            width: 100%;
+            height: auto;
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
+
