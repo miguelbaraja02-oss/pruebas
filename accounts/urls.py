@@ -11,4 +11,5 @@ urlpatterns = [
     path("welcome/", views.welcome_view, name="welcome"),
     path("profile/", views.profile_view, name="profile"),
     path("profile/edit/", views.profile_edit_view, name="profile_edit"),
+    path('manage-roles/', views.manage_roles_view, name='manage_roles'),
 ]

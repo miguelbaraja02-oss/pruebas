@@ -73,46 +73,31 @@
             background-color: rgba(255,255,255,0.1);
         }
 
-        /* 1. CONTROL DEL TAMAÑO DE LA FOTO (IMAGEN REAL) */
         .user-avatar {
-            /* >>> CAMBIA ESTOS VALORES PARA EL TAMAÑO DE LA FOTO <<< */
             width: 40px;
             height: 40px;
-            /* ------------------------------------------------------ */
-            
             border-radius: 50%;
             object-fit: cover;
-            
-            /* >>> CAMBIO AQUÍ: BORDE BLANCO <<< */
             border: 2px solid #ffffff; 
             margin-right: 10px;
         }
 
-        /* 2. ESTILO DEL ICONO CUANDO NO HAY FOTO */
         .user-avatar-placeholder {
-            /* >>> CAMBIA ESTOS VALORES PARA EL TAMAÑO DEL ICONO <<< */
             width: 40px;
             height: 40px;
             font-size: 1.2rem; 
-            /* ----------------------------------------------------- */
-
             border-radius: 50%;
-            background-color: var(--upec-gold); /* Fondo dorado */
-            color: var(--upec-black); /* Icono negro */
+            background-color: var(--upec-gold);
+            color: var(--upec-black);
             display: flex;
             align-items: center;
             justify-content: center;
-            
-            /* >>> CAMBIO AQUÍ: BORDE BLANCO <<< */
             border: 2px solid #ffffff;
             margin-right: 10px;
         }
 
-        /* 3. CONTROL DEL TAMAÑO DEL NOMBRE DE USUARIO */
         .user-name-text {
-            /* >>> CAMBIA ESTE VALOR PARA EL TAMAÑO DE LA LETRA <<< */
             font-size: 1rem; 
-            /* ---------------------------------------------------- */
             font-weight: 600;
         }
 
@@ -270,6 +255,12 @@
             <a href="#" class="nav-link-custom">
                 <i class="fa fa-chart-line"></i> Reportes
             </a>
+
+            {% if user.is_authenticated and user.profile.role == 'ADMIN' %}
+                <a href="{% url 'accounts:manage_roles' %}" class="nav-link-custom">
+                    <i class="fa fa-user-shield"></i> Gestión de Roles
+                </a>
+            {% endif %}
         </nav>
         
     </aside>
