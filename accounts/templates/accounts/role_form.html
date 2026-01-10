@@ -1,0 +1,13 @@
+{% extends "base/base_base.html" %}
+{% block content %}
+<h2>{{ action }} rol</h2>
+<form method="post">
+    {% csrf_token %}
+    <label>Nombre:</label>
+    <input type="text" name="name" value="{{ role.name|default:'' }}" required><br><br>
+    <label>Descripción:</label>
+    <input type="text" name="description" value="{{ role.description|default:'' }}"><br><br>
+    <button type="submit">{{ action }}</button>
+</form>
+<a href="{% url 'accounts:roles_list' %}">Volver al listado</a>
+{% endblock %}

@@ -256,7 +256,7 @@
                 <i class="fa fa-chart-line"></i> Reportes
             </a>
 
-            {% if user.is_authenticated and user.profile.role == 'ADMIN' %}
+            {% if user.is_authenticated and user.profile.role.name == 'ADMIN' %}
                 <a href="{% url 'accounts:manage_roles' %}" class="nav-link-custom">
                     <i class="fa fa-user-shield"></i> Gestión de Roles
                 </a>
