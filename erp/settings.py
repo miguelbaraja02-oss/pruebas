@@ -121,6 +121,14 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Static files (production)
+# Carpeta donde se recopilan los archivos estáticos con `collectstatic`.
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Usar ManifestStaticFilesStorage en producción para cache-busting
+# (genera nombres con hash y evita problemas de caché en navegadores/CDNs).
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
 
 
 

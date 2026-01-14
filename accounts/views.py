@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django import forms
 
 from .models import Profile
-from .forms import ProfileForm
+from .forms import ProfileForm, RoleForm
 from .decorators import role_required
 
 
@@ -117,28 +117,59 @@ def profile_edit_view(request):
 from .models import Role, Profile, Permission
 
 
-@login_required
+@login_required(login_url="accounts:login")
 @role_required(["ADMIN"])
 def manage_roles_view(request):
     profiles = Profile.objects.select_related("user", "role")
-    roles = Role.objects.all()
+    roles = Role.objects.prefetch_related("permissions").all()
 
+    # Determinar si se está editando un rol específico
+    selected_role_id = request.GET.get("role_id") or request.POST.get("role_id")
+    selected_role = None
+    if selected_role_id:
+        try:
+            selected_role = Role.objects.get(id=int(selected_role_id))
+        except (Role.DoesNotExist, ValueError):
+            selected_role = None
+
+    # Manejo de acciones POST
     if request.method == "POST":
-        for profile in profiles:
-            role_id = request.POST.get(f"role_{profile.id}")
+        # 1) Crear/Editar rol
+        if "save_role" in request.POST:
+            form = RoleForm(request.POST, instance=selected_role)
+            if form.is_valid():
+                form.save()
+                return redirect("accounts:manage_roles")
+        # 2) Eliminar rol
+        elif "delete_role" in request.POST:
+            if selected_role:
+                selected_role.delete()
+            return redirect("accounts:manage_roles")
+        # 3) Asignar roles a usuarios
+        elif "assign_roles" in request.POST:
+            for profile in profiles:
+                role_id = request.POST.get(f"role_{profile.id}")
+                if role_id:
+                    try:
+                        profile.role_id = int(role_id)
+                    except ValueError:
+                        profile.role = None
+                else:
+                    profile.role = None
+                profile.save()
+            return redirect("accounts:manage_roles")
 
-            if role_id:
-                profile.role_id = int(role_id)
-            else:
-                profile.role = None
-
-            profile.save()
-
-        return redirect("accounts:manage_roles")
+        # Si hay errores de formulario, continuar a render con errores
+        form = RoleForm(request.POST, instance=selected_role)
+    else:
+        # GET: cargar formulario (crear o editar)
+        form = RoleForm(instance=selected_role)
 
     return render(request, "accounts/manage_roles.html", {
         "profiles": profiles,
-        "roles": roles
+        "roles": roles,
+        "form": form,
+        "selected_role": selected_role,
     })
     
     

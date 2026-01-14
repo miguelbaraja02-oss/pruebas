@@ -3,141 +3,169 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Iniciar Sesión</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        :root {
+            --upec-green: #006633;
+            --upec-dark: #004d26;
+            --upec-gold: #ffce00;
+        }
+
         body {
-            background: #006633;
+            /* Degradado elegante en lugar de color plano */
+            background: linear-gradient(135deg, var(--upec-green) 0%, #00331a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: background 0.3s ease;
+            padding: 15px; /* Espacio de seguridad en bordes de móvil */
         }
-        body.dark-mode {
-            background: #1a1a1a;
-        }
+
+        /* --- CONTENEDOR DE LOGIN (TARJETA) --- */
         .login-container {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            padding: 50px;
+            background: rgba(255, 255, 255, 0.95); /* Ligeramente translúcido */
+            backdrop-filter: blur(10px); /* Efecto cristal suave */
+            border-radius: 16px; /* Bordes más redondeados estilo App */
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 40px;
             width: 100%;
-            max-width: 500px;
-            transition: background 0.3s ease, color 0.3s ease;
+            max-width: 450px;
+            position: relative;
+            transition: all 0.3s ease;
         }
-        body.dark-mode .login-container {
-            background: #2d2d2d;
-            color: #f0f0f0;
-        }
+
         .login-container h2 {
-            color: #333;
-            margin-bottom: 20px;
+            color: var(--upec-green);
+            margin-bottom: 10px;
             text-align: center;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1.8rem;
         }
-        body.dark-mode .login-container h2 {
-            color: #f0f0f0;
+
+        .login-subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 0.9rem;
         }
-        
-        /* --- ESTILOS DEL LOGO MODIFICADOS --- */
+
+        /* --- LOGO --- */
         .login-logo {
             display: block;
-            margin: 0 auto 30px auto;
-            max-width: 260px;
-            width: 100%;
+            margin: 0 auto 10px auto;
+            max-width: 180px; /* Tamaño controlado */
             height: auto;
-            /* Agregamos transición para que el cambio de color sea suave */
-            transition: filter 0.3s ease; 
+            transition: filter 0.3s ease;
         }
 
-        /* Esta es la regla mágica: invierte los colores de la imagen en modo oscuro */
-        body.dark-mode .login-logo {
-            filter: invert(1);
+        /* --- INPUTS FLOTANTES MODERNOS --- */
+        .form-floating > .form-control {
+            border-radius: 10px;
+            border: 1px solid #e0e0e0;
+            background-color: #f8f9fa;
         }
-        /* ------------------------------------ */
+        
+        .form-floating > .form-control:focus {
+            border-color: var(--upec-green);
+            box-shadow: 0 0 0 0.25rem rgba(0, 102, 51, 0.15);
+            background-color: #fff;
+        }
 
-        .form-control {
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            padding: 12px 15px;
-            margin-bottom: 15px;
+        .form-floating > label {
+            color: #888;
         }
-        body.dark-mode .form-control {
-            background: #3d3d3d;
-            color: #f0f0f0;
-            border-color: #555;
-        }
-        .form-check {
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-        }
-        .form-check-label {
-            margin-left: 10px;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        body.dark-mode .form-check-label {
-            color: #ccc;
-        }
+
+
+        /* --- BOTÓN PRO --- */
         .btn-login {
             width: 100%;
-            padding: 12px;
-            background: #ffce00;
-            color: #333;
+            padding: 14px;
+            background: linear-gradient(45deg, var(--upec-gold), #ffdb4d);
+            color: #000;
             border: none;
-            border-radius: 5px;
-            font-weight: 600;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
             margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(255, 206, 0, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        /* --- LINKS Y CHECKBOX --- */
         .register-link {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 25px;
+            font-size: 0.95rem;
         }
         .register-link a {
-            color: #667eea;
+            color: var(--upec-green);
             text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
         }
-        body.dark-mode .register-link a {
-            color: #ffce00;
+
+        .form-check-input:checked {
+            background-color: var(--upec-green);
+            border-color: var(--upec-green);
         }
-        .dark-mode-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #ffce00;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-        body.dark-mode .dark-mode-toggle {
-            background: #333;
-            color: #ffce00;
+
+        /* =========================================
+           OPTIMIZACIÓN MÓVIL (MEDIA QUERY)
+           ========================================= */
+        @media (max-width: 576px) {
+            body {
+                padding: 0; /* Pantalla completa en móvil */
+                align-items: flex-start; /* Subir contenido si aparece teclado */
+            }
+
+            .login-container {
+                height: 100vh; /* Ocupar toda la altura */
+                border-radius: 0; /* Sin bordes redondeados en full screen */
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                box-shadow: none;
+                padding: 30px 25px; /* Padding más cómodo para dedos */
+            }
+
+            .login-logo {
+                max-width: 150px; /* Logo más pequeño en móvil */
+                margin-bottom: 5px;
+            }
+
+            .login-container h2 {
+                font-size: 1.5rem;
+            }
+
+            /* Ajuste para que el teclado no tape el input */
+            .btn-login {
+                margin-top: 20px;
+            }
         }
     </style>
 </head>
 
 <body>
 
-<button class="dark-mode-toggle" id="darkModeBtn">🌙</button>
-
 <div class="login-container">
 
-    <h2>Iniciar Sesión</h2>
-
-        <img src="{% static 'accounts/logoV.svg' %}" alt="Logo de la empresa" class="login-logo">
+    <img src="{% static 'accounts/logoV.svg' %}" alt="Logo" class="login-logo">
+    
+    <h2>Bienvenido</h2>
+    <p class="login-subtitle">Ingresa tus credenciales para continuar</p>
 
     {% if login_error %}
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ login_error }}
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert" style="border-radius: 10px; font-size: 0.9rem;">
+            <i class="fa-solid fa-circle-exclamation me-2"></i> {{ login_error }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     {% endif %}
@@ -145,25 +173,34 @@
     <form method="post" id="loginForm">
         {% csrf_token %}
 
-        <input type="text" name="username" id="username"
-               placeholder="Usuario" class="form-control" required>
-
-        <input type="password" name="password" id="password"
-               placeholder="Contraseña" class="form-control" required>
-
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="rememberCreds">
-            <label class="form-check-label" for="rememberCreds">
-                Recordar credenciales
-            </label>
+        <div class="form-floating mb-3">
+            <input type="text" name="username" id="username" class="form-control" placeholder="Usuario" required>
+            <label for="username"><i class="fa-solid fa-user me-2"></i>Usuario</label>
         </div>
 
-        <button type="submit" class="btn btn-login">Entrar</button>
+        <div class="form-floating mb-3">
+            <input type="password" name="password" id="password" class="form-control" placeholder="Contraseña" required>
+            <label for="password"><i class="fa-solid fa-lock me-2"></i>Contraseña</label>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="rememberCreds">
+                <label class="form-check-label small" for="rememberCreds">
+                    Recordarme
+                </label>
+            </div>
+            <a href="#" class="small text-decoration-none text-muted">¿Olvidaste la clave?</a>
+        </div>
+
+        <button type="submit" class="btn btn-login">
+            INGRESAR <i class="fa-solid fa-arrow-right ms-2"></i>
+        </button>
     </form>
 
     <div class="register-link">
-        ¿No tienes cuenta?
-        <a href="{% url 'accounts:register' %}">Regístrate aquí</a>
+        <span class="text-muted">¿Nuevo en el sistema?</span><br>
+        <a href="{% url 'accounts:register' %}">Crear una cuenta</a>
     </div>
 
 </div>
@@ -176,6 +213,7 @@
     const passInput = document.getElementById('password');
     const rememberCheck = document.getElementById('rememberCreds');
 
+    // Lógica de Recordar Usuario
     document.addEventListener('DOMContentLoaded', () => {
         const savedUser = localStorage.getItem('cachedUsername');
         const savedPass = localStorage.getItem('cachedPassword');
@@ -186,6 +224,7 @@
             rememberCheck.checked = true;
             if (savedPass) passInput.value = savedPass;
         }
+
     });
 
     loginForm.addEventListener('submit', () => {
@@ -194,23 +233,12 @@
             localStorage.setItem('cachedPassword', passInput.value);
             localStorage.setItem('shouldRemember', 'true');
         } else {
-            localStorage.clear();
+            localStorage.removeItem('cachedUsername');
+            localStorage.removeItem('cachedPassword');
+            localStorage.setItem('shouldRemember', 'false');
         }
     });
 
-    const darkModeBtn = document.getElementById('darkModeBtn');
-    const isDarkMode = localStorage.getItem('darkMode') === 'true';
-
-    if (isDarkMode) {
-        document.body.classList.add('dark-mode');
-        darkModeBtn.textContent = '☀️';
-    }
-
-    darkModeBtn.addEventListener('click', () => {
-        const enabled = document.body.classList.toggle('dark-mode');
-        localStorage.setItem('darkMode', enabled);
-        darkModeBtn.textContent = enabled ? '☀️' : '🌙';
-    });
 </script>
 
 </body>

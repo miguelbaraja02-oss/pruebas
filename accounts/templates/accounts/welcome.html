@@ -6,25 +6,15 @@
 {% block content %}
 
 <style>
-    /* Efecto de tarjeta flotante */
+    /* Efecto de tarjeta flotante (Mantenido) */
     .stat-card {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border-left: 5px solid var(--upec-green, #006633); /* Usa tu variable o el color fallback */
+        border-left: 5px solid var(--upec-green, #006633);
     }
     
     .stat-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-
-    /* Control de la imagen principal */
-    .hero-image {
-        max-width: 350px; /* Tamaño controlado para que no invada toda la pantalla */
-        width: 100%;
-        height: auto;
-        margin: 20px auto;
-        display: block;
-        filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
     }
 
     .icon-box {
@@ -38,21 +28,128 @@
         color: var(--upec-green, #006633);
         font-size: 1.5rem;
     }
+
+    /* --- ESTILOS PARA LA GALERÍA PRO (Mantenido) --- */
+    .carousel-pro {
+        max-width: 500px;
+        margin: 20px auto;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.25); /* Sombra un poco más fuerte para resaltar del fondo */
+        position: relative;
+    }
+
+    .carousel-pro .carousel-item img {
+        height: 300px;
+        width: 100%;
+        object-fit: cover;
+        object-position: center;
+    }
+
+    .carousel-indicators [data-bs-target] {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: #fff;
+        opacity: 0.5;
+        margin: 0 4px;
+    }
+    .carousel-indicators .active {
+        opacity: 1;
+        background-color: var(--upec-gold, #ffce00);
+        transform: scale(1.2);
+    }
+
+    /* --- NUEVO: FONDO DIFUMINADO ESTATICO --- */
+    .card-blur-bg {
+        position: relative;
+        overflow: hidden; /* Corta lo que sobresalga */
+        border: none; /* Quitamos borde estándar */
+    }
+
+    /* Capa de la imagen de fondo */
+    .card-blur-bg::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        /* IMPORTANTE: Aquí va tu imagen de fondo estática */
+        background-image: url("{% static 'accounts/fondoupec.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        /* El efecto de desenfoque */
+        filter: blur(8px); 
+        /* Escala un poco la imagen para evitar bordes blancos por el blur */
+        transform: scale(1.1);
+        z-index: 0;
+    }
+
+    /* Capa de oscurecimiento suave (opcional, para que se lea el texto) */
+    .card-blur-bg::after {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background-color: rgba(255, 255, 255, 0.7); /* Capa blanca semitransparente */
+        z-index: 1;
+    }
+
+    /* El contenido (Texto y Carrusel) debe estar encima de las capas anteriores */
+    .card-blur-bg .card-body {
+        position: relative;
+        z-index: 2;
+        background: transparent !important; /* Quitamos el fondo blanco sólido */
+    }
 </style>
 
 <div class="container-fluid">
 
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                <div class="card-body p-4 text-center bg-white">
-                    <h1 class="display-6 fw-bold text-dark">
+            
+            <div class="card shadow-sm rounded-4 card-blur-bg">
+                
+                <div class="card-body p-4 text-center">
+                    <h1 class="display-6 fw-bold text-dark text-shadow">
                         Bienvenido al Sistema ERP, <span style="color: #006633;">{{ user.username }}</span>
                     </h1>
-                    <p class="text-muted">Visualización general y métricas del sistema de Logística y Transporte.</p>
+                    <p class="text-dark fw-medium">Visualización general y métricas del sistema de Logística y Transporte.</p>
                     
-                    <img src="{% static 'accounts/arle.svg' %}" alt="Ilustración Principal" class="hero-image">
-                </div>
+                    <div id="heroCarousel" class="carousel slide carousel-fade carousel-pro" data-bs-ride="carousel" data-bs-interval="3000">
+                        
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                            <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+                        </div>
+
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="{% static 'accounts/furina_carrusel.svg' %}" class="d-block w-100" alt="Logística UPEC">
+                            </div>
+
+                            <div class="carousel-item">
+                                <img src="{% static 'accounts/arle_carrusel.svg' %}" class="d-block w-100" alt="ARLECCINO">
+                            </div>
+
+                            <div class="carousel-item">
+                                <img src="{% static 'accounts/mabui_carrusel.svg' %}" class="d-block w-100" alt="MAVUIKA">
+                            </div>
+
+                            <div class="carousel-item">
+                                <img src="{% static 'accounts/colom_carrusel.svg' %}" class="d-block w-100" alt="Tecnología">
+                            </div>
+                        </div>
+
+                        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Anterior</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Siguiente</span>
+                        </button>
+                    </div>
+                    </div>
             </div>
         </div>
     </div>
@@ -203,9 +300,5 @@
     </div>
 
 </div>
-
-
-
-
 
 {% endblock %}

@@ -1,59 +1,256 @@
 {% extends "base/base_base.html" %}
+{% load avatar_tags %}
+
+{% block extra_css %}
+<style>
+    /* --- Estilos Corporativos UPEC --- */
+    .text-upec-green { color: #006633; }
+    .bg-upec-green { background-color: #006633 !important; color: white; }
+    
+    .btn-upec-primary {
+        background-color: #006633;
+        border-color: #00552b;
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .btn-upec-primary:hover {
+        background-color: #004d26;
+        color: #ffce00;
+        border-color: #004d26;
+    }
+
+    .btn-upec-warning {
+        background-color: #ffce00;
+        border-color: #e6b800;
+        color: #000;
+        font-weight: 600;
+    }
+    .btn-upec-warning:hover {
+        background-color: #e6b800;
+        color: #000;
+    }
+
+    .role-card {
+        border-left: 5px solid #006633;
+        transition: transform 0.2s, box-shadow 0.2s;
+        background-color: #fff;
+    }
+    .role-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;
+    }
+
+    /* Estilos Manuales para los Inputs */
+    label { font-weight: 600; color: #333; margin-bottom: 0.3rem; display: block; }
+    
+    input[type="text"], textarea, select {
+        display: block;
+        width: 100%;
+        padding: .375rem .75rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #fff;
+        border: 1px solid #ced4da;
+        border-radius: .25rem;
+    }
+    select[multiple] { height: auto; min-height: 150px; background-image: none; }
+    input:focus, textarea:focus, select:focus {
+        border-color: #006633;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(0, 102, 51, 0.25);
+    }
+
+    /* --- NUEVO: Estilos para la Foto de Perfil --- */
+    .user-avatar {
+        width: 32px;       /* Tamaño fijo */
+        height: 32px;      /* Tamaño fijo */
+        object-fit: cover; /* Evita que la imagen se deforme */
+        border: 1px solid #dee2e6;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>Panel de Roles y Usuarios</h1>
+<div class="container py-4">
+    
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+        <h2 class="fw-bold text-dark">
+            <i class="fa-solid fa-user-shield text-upec-green me-2"></i>Gestión de Roles y Permisos
+        </h2>
+        {% if selected_role %}
+            <a href="?" class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-plus me-1"></i> Crear nuevo rol
+            </a>
+        {% endif %}
+    </div>
 
-<h2>Crear / Editar Rol</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type="hidden" name="role_id" value="{{ form.instance.id }}">
-    <button type="submit" name="save_role">Guardar Rol</button>
-</form>
+    <div class="row g-4">
+        
+        <div class="col-lg-5">
+            
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-upec-green">
+                    <h5 class="card-title mb-0 text-white">
+                        {% if selected_role %}
+                            <i class="fa-solid fa-pen-to-square me-2"></i>Editando: {{ selected_role.name }}
+                        {% else %}
+                            <i class="fa-solid fa-plus-circle me-2"></i>Crear Nuevo Rol
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.name.id_for_label }}">Nombre del Rol:</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}<div class="text-danger small">{{ form.name.errors }}</div>{% endif %}
+                        </div>
 
-<hr>
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}">Descripción:</label>
+                            {{ form.description }}
+                            {% if form.description.errors %}<div class="text-danger small">{{ form.description.errors }}</div>{% endif %}
+                        </div>
 
-<h2>Asignar Roles a Usuarios</h2>
-<form method="post">
-    {% csrf_token %}
-    <table border="1" cellpadding="5" cellspacing="0">
-        <thead>
-            <tr>
-                <th>Usuario</th>
-                <th>Rol</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for profile in profiles %}
-            <tr>
-                <td>{{ profile.user.username }}</td>
-                <td>
-                    <select name="role_{{ profile.id }}">
-                        <option value="">-- Sin rol --</option>
-                        {% for role in roles %}
-                            <option value="{{ role.id }}" {% if profile.role and profile.role.id == role.id %}selected{% endif %}>
-                                {{ role.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <button type="submit" name="assign_roles">Guardar cambios</button>
-</form>
+                        <div class="mb-3">
+                            <label for="{{ form.permissions.id_for_label }}">Permisos Asignados:</label>
+                            <small class="text-muted d-block mb-1">Mantén presionada la tecla "Control" para seleccionar varios.</small>
+                            {{ form.permissions }}
+                            {% if form.permissions.errors %}<div class="text-danger small">{{ form.permissions.errors }}</div>{% endif %}
+                        </div>
+                        
+                        <input type="hidden" name="role_id" value="{{ selected_role.id }}">
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                            {% if selected_role %}
+                                <a href="?" class="btn btn-secondary me-md-2">Cancelar</a>
+                                <button type="submit" name="delete_role" class="btn btn-danger me-md-2" onclick="return confirm('¿Está seguro de eliminar este rol permanentemente?');">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>
+                            {% endif %}
+                            <button type="submit" name="save_role" class="btn btn-upec-primary px-4">
+                                <i class="fa-solid fa-save"></i> Guardar Rol
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
-<hr>
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white border-bottom border-warning border-3">
+                    <h5 class="card-title mb-0">
+                        <i class="fa-solid fa-users-gear me-2"></i>Asignar Roles a Usuarios
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped mb-0 align-middle">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th class="ps-3">Usuario</th>
+                                        <th class="pe-3">Rol Asignado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for profile in profiles %}
+                                    <tr>
+                                        <td class="ps-3 fw-medium d-flex align-items-center">
+                                            {% if profile.avatar and profile.avatar.name != 'profiles/default.png' %}
+                                                <img src="{{ profile.avatar|avatar_url_cache_bust }}" alt="{{ profile.user.username }}" class="user-avatar rounded-circle me-2">
+                                            {% else %}
+                                                <div class="d-flex justify-content-center align-items-center bg-light rounded-circle border me-2" style="width: 32px; height: 32px; font-size: 1.1rem;">
+                                                    <i class="fa-solid fa-user text-muted"></i>
+                                                </div>
+                                            {% endif %}
+                                            
+                                            {{ profile.user.username }}
+                                        </td>
+                                        <td class="pe-3">
+                                            <select name="role_{{ profile.id }}" class="form-select form-select-sm border-success">
+                                                <option value="">-- Sin rol asignado --</option>
+                                                {% for role in roles %}
+                                                    <option value="{{ role.id }}" {% if profile.role and profile.role.id == role.id %}selected{% endif %}>
+                                                        {{ role.name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="p-3 border-top bg-light text-end">
+                            <button type="submit" name="assign_roles" class="btn btn-upec-warning shadow-sm">
+                                <i class="fa-solid fa-check-double me-1"></i> Actualizar asignaciones
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
 
-<h2>Roles Existentes</h2>
-<ul>
-    {% for role in roles %}
-        <li>{{ role.name }} - {{ role.description }} - Permisos: 
-            {% for p in role.permissions.all %} {{ p.name }} {% if not forloop.last %}, {% endif %}{% endfor %}
-        </li>
-    {% empty %}
-        <li>No hay roles creados.</li>
-    {% endfor %}
-</ul>
+        <div class="col-lg-7">
+            <h4 class="mb-3 text-secondary">Roles Existentes</h4>
+            
+            {% if roles %}
+                <div class="row row-cols-1 row-cols-md-1 g-3">
+                    {% for role in roles %}
+                    <div class="col">
+                        <div class="card role-card shadow-sm h-100">
+                            <div class="card-body position-relative">
+                                <div class="position-absolute top-0 end-0 mt-3 me-3">
+                                    <a href="?role_id={{ role.id }}" class="btn btn-sm btn-outline-primary" title="Editar este rol">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <form method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="role_id" value="{{ role.id }}">
+                                        <button type="submit" name="delete_role" class="btn btn-sm btn-outline-danger" onclick="return confirm('¿Eliminar el rol {{ role.name }}?');" title="Eliminar este rol">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <h5 class="card-title text-upec-green fw-bold">{{ role.name }}</h5>
+                                <p class="card-text text-muted small mb-2">
+                                    {% if role.description %}
+                                        {{ role.description }}
+                                    {% else %}
+                                        <em>Sin descripción disponible.</em>
+                                    {% endif %}
+                                </p>
+                                
+                                <hr class="my-2">
+                                
+                                <div>
+                                    <small class="text-uppercase fw-bold text-secondary" style="font-size: 0.75rem;">Permisos:</small>
+                                    <div class="mt-1">
+                                        {% for p in role.permissions.all %}
+                                            <span class="badge rounded-pill bg-secondary bg-opacity-75 mb-1">
+                                                {{ p.name }}
+                                            </span>
+                                        {% empty %}
+                                            <span class="badge rounded-pill bg-light text-dark border">Ningún permiso asignado</span>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info shadow-sm" role="alert">
+                    <i class="fa-solid fa-info-circle me-2"></i> No hay roles creados.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}
