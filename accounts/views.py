@@ -1,14 +1,14 @@
 # accounts/views.py
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django import forms
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.shortcuts import redirect, render
 
-from .models import Profile
 from .forms import ProfileForm, RoleForm
 from .decorators import role_required
+from .models import Permission, Profile, Role
 
 
 # ------------------- FORMULARIO DE REGISTRO -------------------
@@ -114,14 +114,29 @@ def profile_edit_view(request):
 
 
 # ------------------- GESTIÓN DE ROLES (SOLO ADMIN) -------------------
-from .models import Role, Profile, Permission
+
+MODULE_PERMISSIONS = [
+    {"code": "inventario_access", "name": "Acceso al módulo de Inventario"},
+]
+
+
+def ensure_base_permissions():
+    """Crea permisos base para que siempre aparezcan en la UI."""
+    for perm in MODULE_PERMISSIONS:
+        Permission.objects.get_or_create(
+            code=perm["code"], defaults={"name": perm["name"]}
+        )
 
 
 @login_required(login_url="accounts:login")
 @role_required(["ADMIN"])
 def manage_roles_view(request):
+    ensure_base_permissions()
+
     profiles = Profile.objects.select_related("user", "role")
     roles = Role.objects.prefetch_related("permissions").all()
+    allowed_permission_codes = [p["code"] for p in MODULE_PERMISSIONS]
+    permission_qs = Permission.objects.filter(code__in=allowed_permission_codes)
 
     # Determinar si se está editando un rol específico
     selected_role_id = request.GET.get("role_id") or request.POST.get("role_id")
@@ -136,7 +151,7 @@ def manage_roles_view(request):
     if request.method == "POST":
         # 1) Crear/Editar rol
         if "save_role" in request.POST:
-            form = RoleForm(request.POST, instance=selected_role)
+            form = RoleForm(request.POST, instance=selected_role, permissions_queryset=permission_qs)
             if form.is_valid():
                 form.save()
                 return redirect("accounts:manage_roles")
@@ -160,10 +175,10 @@ def manage_roles_view(request):
             return redirect("accounts:manage_roles")
 
         # Si hay errores de formulario, continuar a render con errores
-        form = RoleForm(request.POST, instance=selected_role)
+        form = RoleForm(request.POST, instance=selected_role, permissions_queryset=permission_qs)
     else:
         # GET: cargar formulario (crear o editar)
-        form = RoleForm(instance=selected_role)
+        form = RoleForm(instance=selected_role, permissions_queryset=permission_qs)
 
     return render(request, "accounts/manage_roles.html", {
         "profiles": profiles,

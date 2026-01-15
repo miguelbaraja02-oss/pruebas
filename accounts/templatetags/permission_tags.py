@@ -1,22 +1,11 @@
-import time
-
 from django import template
 
 register = template.Library()
 
 
-@register.filter
-def avatar_url_cache_bust(avatar):
-    """Añade un timestamp a la URL del avatar para evitar caché del navegador"""
-    if avatar and hasattr(avatar, "url"):
-        timestamp = int(time.time())
-        return f"{avatar.url}?v={timestamp}"
-    return ""
-
-
 @register.filter(name="has_permission_code")
 def has_permission_code(user, code):
-    """Retorna True si el rol del usuario tiene el permiso indicado."""
+    """Return True if the user's role includes the given permission code."""
     if not getattr(user, "is_authenticated", False):
         return False
 

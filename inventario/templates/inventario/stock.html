@@ -1,0 +1,95 @@
+{% extends "base/base_base.html" %}
+
+{% block title %}Inventario - Stock{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stock-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 6px 24px rgba(0,0,0,0.05);
+        overflow: hidden;
+    }
+    .table thead th {
+        background: #f8f9fb;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.4px;
+        color: #6c757d;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .table tbody td { vertical-align: middle; }
+    .badge-soft {
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-weight: 600;
+        font-size: 0.78rem;
+    }
+    .badge-soft-success { background: #d1e7dd; color: #0f5132; }
+    .badge-soft-danger { background: #f8d7da; color: #842029; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <div>
+            <h2 class="fw-bold mb-1">Stock por producto y almacén</h2>
+            <p class="text-muted mb-0">Balance = Entradas + Ajustes - Salidas (solo movimientos confirmados).</p>
+        </div>
+        <a href="{% url 'inventario:inventario' %}" class="btn btn-outline-secondary">
+            <i class="fa fa-arrow-left me-2"></i>Volver al dashboard
+        </a>
+    </div>
+
+    <div class="card stock-card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width: 110px;">SKU</th>
+                            <th>Producto</th>
+                            <th>Almacén</th>
+                            <th class="text-center">Unidad</th>
+                            <th class="text-end">Entradas/Ajustes</th>
+                            <th class="text-end">Salidas</th>
+                            <th class="text-end">Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if stock_rows %}
+                            {% for row in stock_rows %}
+                                <tr>
+                                    <td class="fw-semibold text-secondary">{{ row.product__sku }}</td>
+                                    <td class="fw-bold text-dark">{{ row.product__name }}</td>
+                                    <td class="text-muted">{{ row.warehouse__code }} - {{ row.warehouse__name }}</td>
+                                    <td class="text-center text-muted">{{ row.product__unit_of_measure }}</td>
+                                    <td class="text-end text-success fw-semibold">{{ row.entries }}</td>
+                                    <td class="text-end text-danger fw-semibold">{{ row.exits }}</td>
+                                    <td class="text-end">
+                                        {% if row.balance < 0 %}
+                                            <span class="badge-soft badge-soft-danger">{{ row.balance }}</span>
+                                        {% else %}
+                                            <span class="badge-soft badge-soft-success">{{ row.balance }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="fa fa-inbox fa-3x mb-3 opacity-25"></i>
+                                        <p class="mb-0">No hay movimientos confirmados para calcular stock.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

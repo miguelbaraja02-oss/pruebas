@@ -116,10 +116,25 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="{{ form.permissions.id_for_label }}">Permisos Asignados:</label>
-                            <small class="text-muted d-block mb-1">Mantén presionada la tecla "Control" para seleccionar varios.</small>
-                            {{ form.permissions }}
-                            {% if form.permissions.errors %}<div class="text-danger small">{{ form.permissions.errors }}</div>{% endif %}
+                            <label for="{{ form.permissions.id_for_label }}">Permisos del módulo Inventario:</label>
+                            <small class="text-muted d-block mb-2">Marca si este rol puede ingresar al módulo de Inventario.</small>
+
+                            {% if form.permissions.field.queryset.exists %}
+                                <div class="row row-cols-1 row-cols-md-2 g-2">
+                                    {% for checkbox in form.permissions %}
+                                        <div class="col">
+                                            <div class="form-check">
+                                                {{ checkbox.tag }}
+                                                <label class="form-check-label" for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-warning mb-0">No hay permisos configurados.</div>
+                            {% endif %}
+
+                            {% if form.permissions.errors %}<div class="text-danger small mt-2">{{ form.permissions.errors }}</div>{% endif %}
                         </div>
                         
                         <input type="hidden" name="role_id" value="{{ selected_role.id }}">

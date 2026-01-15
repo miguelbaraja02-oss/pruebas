@@ -1,0 +1,321 @@
+{% extends "base/base_base.html" %}
+
+{% block title %}Categorías - Inventario{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --upec-green: #006633;
+        --upec-gold: #ffce00;
+    }
+
+    /* --- Estilos Generales --- */
+    .page-header {
+        background: white;
+        border-bottom: 1px solid #edf2f9;
+        padding-bottom: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    /* --- Tabla Pro --- */
+    .table-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background-color: #f8f9fa;
+        color: #6c757d;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+        border-bottom: 1px solid #edf2f9;
+        padding: 1rem;
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid #edf2f9;
+        font-size: 0.9rem;
+    }
+
+    .category-icon {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        background-color: rgba(0, 102, 51, 0.1);
+        color: var(--upec-green);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.2rem;
+        margin-right: 1rem;
+    }
+
+    /* Badges Suaves */
+    .badge-soft-success { background-color: #d1e7dd; color: #0f5132; padding: 0.5em 0.8em; }
+    .badge-soft-secondary { background-color: #e2e3e5; color: #41464b; padding: 0.5em 0.8em; }
+
+    /* Botones de acción en tabla */
+    .btn-icon {
+        width: 32px; height: 32px;
+        padding: 0;
+        display: inline-flex; align-items: center; justify-content: center;
+        border-radius: 6px;
+        color: #6c757d;
+        transition: all 0.2s;
+    }
+    .btn-icon:hover { background-color: #f1f3f5; color: var(--upec-green); }
+
+    /* --- Formulario Sticky --- */
+    .sticky-form {
+        position: sticky;
+        top: 100px; /* Ajusta según la altura de tu navbar */
+    }
+
+    .form-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        border-top: 4px solid var(--upec-green);
+    }
+
+    /* Estilizar inputs de Django si no tienen clases Bootstrap */
+    .pro-form input[type="text"],
+    .pro-form textarea,
+    .pro-form select {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 0.95rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 0.5rem;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+
+    .pro-form input:focus, 
+    .pro-form textarea:focus, 
+    .pro-form select:focus {
+        border-color: var(--upec-green);
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(0, 102, 51, 0.25);
+    }
+
+    .pro-form label {
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #555;
+        margin-bottom: 0.4rem;
+        display: block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    
+    <div class="page-header d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+        <div>
+            <h2 class="fw-bold mb-1 text-dark">Categorías</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 small">
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Inventario</a></li>
+                    <li class="breadcrumb-item active text-success" aria-current="page">Categorías</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <a href="{% url 'inventario:inventario' %}" class="btn btn-outline-secondary btn-sm shadow-sm">
+                <i class="fa fa-arrow-left me-1"></i> Volver al Panel
+            </a>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show shadow-sm border-0" role="alert">
+                <i class="fa fa-info-circle me-2"></i>{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="row g-4">
+        
+        <div class="col-lg-8">
+            <div class="card table-card h-100">
+                
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <h5 class="fw-bold mb-0">Estructura del Catálogo</h5>
+                    <div class="input-group" style="max-width: 300px;">
+                        <span class="input-group-text bg-light border-end-0"><i class="fa fa-search text-muted"></i></span>
+                        <input type="text" class="form-control border-start-0 bg-light" placeholder="Buscar categoría...">
+                    </div>
+                </div>
+
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Categoría</th>
+                                    <th>Dependencia (Padre)</th>
+                                    <th class="text-center">Estado</th>
+                                    <th>Fecha Creación</th>
+                                    <th class="text-end">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for c in categories %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="category-icon">
+                                                    {% if c.parent %}
+                                                        <i class="fa fa-level-up-alt fa-rotate-90"></i>
+                                                    {% else %}
+                                                        <i class="fa fa-folder"></i>
+                                                    {% endif %}
+                                                </div>
+                                                <div>
+                                                    <span class="fw-bold text-dark d-block">{{ c.name }}</span>
+                                                    <small class="text-muted d-block text-truncate" style="max-width: 200px;">
+                                                        {{ c.description|default:"Sin descripción" }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% if c.parent %}
+                                                <span class="badge bg-light text-dark border">
+                                                    <i class="fa fa-tag me-1 text-muted"></i>{{ c.parent.name }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-muted small fst-italic">Categoría Raíz</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-center">
+                                            {% if c.is_active %}
+                                                <span class="badge rounded-pill badge-soft-success">Activa</span>
+                                            {% else %}
+                                                <span class="badge rounded-pill badge-soft-secondary">Inactiva</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-muted small">
+                                            <i class="fa fa-calendar-alt me-1"></i>{{ c.created_at|date:"d M Y" }}
+                                        </td>
+                                        <td class="text-end">
+                                            <a href="#" class="btn btn-icon" title="Editar">
+                                                <i class="fa fa-pen"></i>
+                                            </a>
+                                            <a href="#" class="btn btn-icon text-danger" title="Eliminar">
+                                                <i class="fa fa-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5">
+                                            <div class="text-muted">
+                                                <i class="fa fa-folder-open fa-3x mb-3 opacity-25"></i>
+                                                <p class="mb-0">No hay categorías registradas.</p>
+                                                <small>Utiliza el formulario para crear la primera.</small>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top py-3">
+                    <small class="text-muted">Mostrando {{ categories|length }} registros</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="sticky-form">
+                <div class="card form-card bg-white">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-4">
+                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                <i class="fa fa-plus"></i>
+                            </div>
+                            <h5 class="fw-bold mb-0">Nueva Categoría</h5>
+                        </div>
+
+                        <form method="post" novalidate class="pro-form">
+                            {% csrf_token %}
+                            
+                            {% if form.non_field_errors %}
+                                <div class="alert alert-danger small p-2 mb-3">
+                                    {{ form.non_field_errors }}
+                                </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                <label for="{{ form.name.id_for_label }}">Nombre <span class="text-danger">*</span></label>
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small mt-1">{{ form.name.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.description.id_for_label }}">Descripción</label>
+                                {{ form.description }}
+                                {% if form.description.errors %}
+                                    <div class="text-danger small mt-1">{{ form.description.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="{{ form.parent.id_for_label }}">Categoría Padre (Opcional)</label>
+                                {{ form.parent }}
+                                <div class="form-text small text-muted">Dejar vacío para crear una categoría principal.</div>
+                                {% if form.parent.errors %}
+                                    <div class="text-danger small mt-1">{{ form.parent.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check form-switch">
+                                    {{ form.is_active }}
+                                    <label class="form-check-label fw-bold" for="{{ form.is_active.id_for_label }}">
+                                        Categoría Activa
+                                    </label>
+                                </div>
+                                <div class="form-text small">Si se desactiva, no aparecerá en los selectores.</div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button class="btn btn-success fw-bold py-2 shadow-sm" type="submit">
+                                    <i class="fa fa-save me-2"></i>Guardar Categoría
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm mt-3 bg-light">
+                    <div class="card-body d-flex">
+                        <i class="fa fa-lightbulb text-warning fs-4 me-3 mt-1"></i>
+                        <div>
+                            <small class="text-muted">
+                                <strong>Tip:</strong> Organiza bien tus categorías padre e hijo para facilitar los reportes de inventario más adelante.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

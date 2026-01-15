@@ -349,7 +349,9 @@
             <a href="#" class="nav-link-custom"><i class="fa fa-route"></i> Gestión de Rutas</a>
 
             <div class="sidebar-heading">Operaciones</div>
-            <a href="{% url 'inventario:inventario' %}" class="nav-link-custom"><i class="fa fa-box"></i> Inventario</a>
+            {% if user|has_permission_code:'inventario_access' %}
+                <a href="{% url 'inventario:inventario' %}" class="nav-link-custom"><i class="fa fa-box"></i> Inventario</a>
+            {% endif %}
             <a href="#" class="nav-link-custom"><i class="fa fa-clipboard-list"></i> Órdenes Transp.</a>
             <a href="#" class="nav-link-custom"><i class="fa fa-id-card"></i> Conductores</a>
 
@@ -382,10 +384,12 @@
         <span>Inicio</span>
     </a>
 
+    {% if user|has_permission_code:'inventario_access' %}
     <a href="{% url 'inventario:inventario' %}" class="bottom-nav-item">
         <i class="fa fa-box"></i>
         <span>Inventario</span>
     </a>
+    {% endif %}
 
     <a href="#" class="bottom-nav-item" data-bs-toggle="offcanvas" data-bs-target="#appDrawer" aria-controls="appDrawer">
         <div class="bottom-nav-center">
@@ -433,10 +437,12 @@
                 <span class="app-label">Rutas</span>
             </a>
 
+            {% if user|has_permission_code:'inventario_access' %}
             <a href="{% url 'inventario:inventario' %}" class="app-icon-card">
                 <div class="app-icon-box"><i class="fa fa-box-open"></i></div>
                 <span class="app-label">Inventario</span>
             </a>
+            {% endif %}
             <a href="#" class="app-icon-card">
                 <div class="app-icon-box"><i class="fa fa-clipboard-list"></i></div>
                 <span class="app-label">Órdenes</span>
